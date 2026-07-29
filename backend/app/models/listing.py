@@ -16,6 +16,7 @@ class Listing(Base):
     description: Mapped[str] = mapped_column(Text)
     city: Mapped[str] = mapped_column(String(100), index=True)
     country: Mapped[str] = mapped_column(String(100), index=True)
+    region: Mapped[str] = mapped_column(String(100), index=True)
     trip_style: Mapped[str] = mapped_column(String(50), index=True)  # relaxation, adventure, culture, food, nightlife
     price_per_night: Mapped[float] = mapped_column(Float)
     rating: Mapped[float] = mapped_column(Float, default=0.0)
