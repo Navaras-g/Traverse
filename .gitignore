@@ -1,0 +1,23 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env
+.env
+backend/.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Docker
+*.log
+
+PRD_AI_Travel_Platform.md
