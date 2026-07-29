@@ -1,7 +1,9 @@
 function App() {
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Traverse — Tailwind is working</h1>
+    <div className="min-h-screen flex items-center justify-center">
+      <h1 className="font-[Fraunces] text-5xl font-semibold text-[var(--color-accent)]">
+        Traverse
+      </h1>
     </div>
   )
 }
