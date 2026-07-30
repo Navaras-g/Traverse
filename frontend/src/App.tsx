@@ -1,14 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Home } from "./pages/Home";
-
-function Search() {
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-16">
-      <p className="font-display text-2xl">Search — coming in the next phase.</p>
-    </div>
-  );
-}
+import { Search } from "./pages/Search";
 
 function App() {
   return (
