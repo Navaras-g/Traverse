@@ -1,18 +1,74 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Fraunces", serif;
-  --font-sans: "Inter", sans-serif;
+  --font-display: "Newsreader", serif;
+  --font-sans: "Work Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
-  --color-ink: #1a1a1a;
-  --color-paper: #faf7f2;
-  --color-accent: #d97757;
-  --color-accent-dark: #b85c3f;
-  --color-muted: #8a8578;
+  --color-paper: #F1ECDD;
+  --color-paper-warm: #EFEADC;
+  --color-ink: #2A2420;
+  --color-muted: #8C8272;
+  --color-line: #DDD4BE;
+
+  --color-culture: #A9814A;
+  --color-adventure: #5C7350;
+  --color-relaxation: #7C9BA6;
+  --color-food: #A85C42;
+  --color-nightlife: #7C6485;
+  --color-wildlife: #4F7566;
+  --color-pilgrimage: #8B5058;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: var(--color-paper);
   color: var(--color-ink);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawLine {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .reveal,
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+  }
 }
