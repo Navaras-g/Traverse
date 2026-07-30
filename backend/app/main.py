@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.routers import listings, llm_test
+from app.routers import listings, llm_test, itinerary
 
 app = FastAPI(title=settings.app_name)
 
@@ -16,7 +17,7 @@ app.add_middleware(
 
 app.include_router(listings.router)
 app.include_router(llm_test.router)
-
+app.include_router(itinerary.router)
 
 @app.get("/health")
 def health_check():

@@ -10,6 +10,12 @@ from app.services.ranking import score_listing
 router = APIRouter(prefix="/listings", tags=["listings"])
 
 
+@router.get("/by-ids", response_model=list[ListingOut])
+def get_by_ids(ids: str, db: Session = Depends(get_db)):
+    id_list = [i for i in ids.split(",") if i]
+    listings = db.query(Listing).filter(Listing.id.in_(id_list)).all()
+    return [ListingOut.model_validate(l) for l in listings]
+
 @router.get("/search", response_model=list[ListingOut])
 def search_listings(
     q: str | None = None,
