@@ -3,7 +3,7 @@ import { TRIP_STYLES, type TripStyle } from "../lib/tripStyles";
 const REGIONS = ["Bagmati", "Gandaki", "Lumbini", "Karnali", "Sudurpashchim", "Koshi", "Madhesh"];
 
 export interface Filters {
-    city: string;
+    query: string;
     region: string;
     tripStyle: TripStyle | "";
     budgetMax: string;
@@ -22,13 +22,13 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         <div className="space-y-5">
             <div>
                 <label className="font-sans text-xs uppercase tracking-wide text-[var(--color-muted)] mb-2 block">
-                    Search a city
+                    Search a place or city
                 </label>
                 <input
                     type="text"
-                    value={filters.city}
-                    onChange={(e) => update({ city: e.target.value })}
-                    placeholder="e.g. Pokhara"
+                    value={filters.query}
+                    onChange={(e) => update({ query: e.target.value })}
+                    placeholder="e.g. Durbar Square, Pokhara"
                     className="w-full font-sans text-sm bg-white border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)] transition-colors"
                 />
             </div>
@@ -70,7 +70,9 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
                 >
                     <option value="">All provinces</option>
                     {REGIONS.map((r) => (
-                        <option key={r} value={r}>{r}</option>
+                        <option key={r} value={r}>
+                            {r}
+                        </option>
                     ))}
                 </select>
             </div>

@@ -25,7 +25,7 @@ export function Home() {
                     className="font-sans text-xs tracking-widest uppercase text-[var(--color-muted)] mb-3"
                     style={{ animation: "fadeUp 0.6s ease-out both" }}
                 >
-                    51 destinations · 7 provinces
+                    Popular destinations · 7 provinces
                 </p>
                 <h1
                     className="font-display italic text-5xl md:text-7xl leading-tight text-[var(--color-ink)] mb-6 max-w-2xl"

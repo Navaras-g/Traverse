@@ -5,7 +5,7 @@ import { ListingCard } from "../components/ListingCard";
 import { FilterBar, type Filters } from "../components/FilterBar";
 import { MapView } from "../components/MapView";
 
-const EMPTY_FILTERS: Filters = { city: "", region: "", tripStyle: "", budgetMax: "", minRating: "" };
+const EMPTY_FILTERS: Filters = { query: "", region: "", tripStyle: "", budgetMax: "", minRating: "" };
 
 export function Search() {
     const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -16,7 +16,7 @@ export function Search() {
         const timeout = setTimeout(() => {
             setLoading(true);
             const params: Record<string, string> = {};
-            if (filters.city) params.city = filters.city;
+            if (filters.query) params.q = filters.query;
             if (filters.region) params.region = filters.region;
             if (filters.tripStyle) params.trip_style = filters.tripStyle;
             if (filters.budgetMax) params.budget_max = filters.budgetMax;
@@ -32,8 +32,8 @@ export function Search() {
     }, [filters]);
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-[280px_1fr_380px] gap-8">
-            <aside>
+        <div className="max-w-[1600px] mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-[260px_1fr_340px] gap-6">
+            <aside className="lg:sticky lg:top-24 lg:self-start">
                 <h2 className="font-display text-xl mb-6">Refine</h2>
                 <FilterBar filters={filters} onChange={setFilters} />
             </aside>
@@ -52,7 +52,7 @@ export function Search() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {listings.map((listing, i) => (
                         <ListingCard key={listing.id} listing={listing} delayMs={Math.min(i * 60, 400)} />
                     ))}
