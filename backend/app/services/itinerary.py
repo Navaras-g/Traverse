@@ -32,17 +32,28 @@ Here are the selected stops, in no particular order:
 {listing_lines}
 {preference_line}
 
-Arrange these into a logical day-by-day itinerary (one stop per day, in the order that
-makes the most geographic and narrative sense). For each day, write a short, warm,
-specific 2-3 sentence narrative explaining why this stop fits the traveler, referencing
-real details from the listing rather than generic filler.
+Decide the total number of days for this trip primarily from any duration the traveler
+mentions in their preferences above (e.g. "3 day itinerary", "visit in 2 days"). If no
+duration is mentioned, default to one day per stop.
+
+Stops do not need a strict one-to-one mapping to days:
+- If there are fewer days than stops, combine multiple stops into the same day where it
+  makes geographic sense (e.g. two nearby heritage sites in one day).
+- If there are more days than stops, let a single stop span multiple consecutive days
+  (e.g. a multi-day base for trekking or rest), and vary each day's narrative so it
+  doesn't just repeat itself — describe a different facet of that stop or a nearby
+  activity each day.
+- Every listing id provided must appear on at least one day somewhere in the itinerary.
+
+For each day, write a short, warm, specific 2-3 sentence narrative explaining what makes
+that day worthwhile, referencing real details from the listing(s) rather than generic filler.
 
 Respond with ONLY valid JSON, no markdown fences, no preamble, in exactly this shape:
 {{
   "trip_title": "string",
   "intro": "1-2 sentence overview of the whole trip",
   "days": [
-    {{"day_number": 1, "heading": "short title", "narrative": "2-3 sentences", "listing_id": "the listing id"}}
+    {{"day_number": 1, "heading": "short title", "narrative": "2-3 sentences", "listing_ids": ["one or more listing ids covered that day"]}}
   ]
 }}
 """

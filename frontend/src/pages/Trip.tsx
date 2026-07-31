@@ -9,7 +9,7 @@ interface ItineraryDay {
     day_number: number;
     heading: string;
     narrative: string;
-    listing_id: string;
+    listing_ids: string[];
 }
 
 interface ItineraryResult {
@@ -115,7 +115,7 @@ export function Trip() {
 
                     <div className="space-y-8">
                         {itinerary.days.map((day, i) => {
-                            const listing = listingById(day.listing_id);
+                            const dayListings = day.listing_ids.map(listingById).filter(Boolean) as Listing[];
                             return (
                                 <Reveal key={day.day_number} delayMs={i * 120}>
                                     <div className="flex gap-5 border-t border-[var(--color-line)] pt-6">
@@ -123,12 +123,23 @@ export function Trip() {
                                             Day {day.day_number}
                                         </div>
                                         <div className="flex-1">
-                                            {listing && (
-                                                <img src={listing.image_url} alt={listing.title} className="w-full h-48 object-cover rounded-xl mb-4" />
+                                            {dayListings.length > 0 && (
+                                                <div className={`grid gap-3 mb-4 ${dayListings.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+                                                    {dayListings.map((listing) => (
+                                                        <img
+                                                            key={listing.id}
+                                                            src={listing.image_url}
+                                                            alt={listing.title}
+                                                            className="w-full h-48 object-cover rounded-xl"
+                                                        />
+                                                    ))}
+                                                </div>
                                             )}
-                                            <div className="flex items-center gap-2 mb-2">
+                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
                                                 <h3 className="font-display text-xl text-[var(--color-ink)]">{day.heading}</h3>
-                                                {listing && <Badge style={listing.trip_style} />}
+                                                {dayListings.map((listing) => (
+                                                    <Badge key={listing.id} style={listing.trip_style} />
+                                                ))}
                                             </div>
                                             <p className="font-sans text-sm text-[var(--color-ink)]/80 leading-relaxed">{day.narrative}</p>
                                         </div>

@@ -10,7 +10,7 @@ class ItineraryDay(BaseModel):
     day_number: int
     heading: str
     narrative: str
-    listing_id: str
+    listing_ids: list[str]
 
 
 class ItineraryResponse(BaseModel):
