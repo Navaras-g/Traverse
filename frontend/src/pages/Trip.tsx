@@ -5,25 +5,9 @@ import type { Listing } from "../types/listing";
 import { Badge } from "../components/Badge";
 import { Reveal } from "../components/Reveal";
 
-interface ItineraryDay {
-    day_number: number;
-    heading: string;
-    narrative: string;
-    listing_ids: string[];
-}
-
-interface ItineraryResult {
-    trip_title: string;
-    intro: string;
-    days: ItineraryDay[];
-    cached: boolean;
-}
-
 export function Trip() {
-    const { selectedIds, toggle, clear } = useTrip();
+    const { selectedIds, toggle, clear, notes, setNotes, itinerary, setItinerary } = useTrip();
     const [listings, setListings] = useState<Listing[]>([]);
-    const [notes, setNotes] = useState("");
-    const [itinerary, setItinerary] = useState<ItineraryResult | null>(null);
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,9 +24,8 @@ export function Trip() {
     const generate = async () => {
         setGenerating(true);
         setError(null);
-        setItinerary(null);
         try {
-            const res = await api.post<ItineraryResult>("/itinerary/generate", {
+            const res = await api.post("/itinerary/generate", {
                 listing_ids: selectedIds,
                 notes: notes || null,
             });
@@ -126,12 +109,7 @@ export function Trip() {
                                             {dayListings.length > 0 && (
                                                 <div className={`grid gap-3 mb-4 ${dayListings.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
                                                     {dayListings.map((listing) => (
-                                                        <img
-                                                            key={listing.id}
-                                                            src={listing.image_url}
-                                                            alt={listing.title}
-                                                            className="w-full h-48 object-cover rounded-xl"
-                                                        />
+                                                        <img key={listing.id} src={listing.image_url} alt={listing.title} className="w-full h-48 object-cover rounded-xl" />
                                                     ))}
                                                 </div>
                                             )}
