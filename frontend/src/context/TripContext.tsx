@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { api } from "../lib/api";
+import { useAuth } from "./AuthContext";
 
 interface ItineraryDay {
     day_number: number;
@@ -39,21 +41,44 @@ function readJSON<T>(key: string, fallback: T): T {
 }
 
 export function TripProvider({ children }: { children: ReactNode }) {
+    const { user, loading: authLoading } = useAuth();
     const [selectedIds, setSelectedIds] = useState<string[]>(() => readJSON(SELECTION_KEY, []));
     const [notes, setNotes] = useState<string>(() => readJSON(NOTES_KEY, ""));
     const [itinerary, setItinerary] = useState<ItineraryResult | null>(() => readJSON(ITINERARY_KEY, null));
+    const hydratedForUser = useRef<string | null>(null);
 
+    // Once we know who's logged in, pull their saved trip from the database
     useEffect(() => {
-        localStorage.setItem(SELECTION_KEY, JSON.stringify(selectedIds));
-    }, [selectedIds]);
+        if (authLoading) return;
+        if (!user) {
+            hydratedForUser.current = null;
+            return;
+        }
+        if (hydratedForUser.current === user.id) return;
 
-    useEffect(() => {
-        localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-    }, [notes]);
+        api.get("/trips/me").then((res) => {
+            if (res.data) {
+                setSelectedIds(res.data.listing_ids ?? []);
+                setNotes(res.data.notes ?? "");
+                setItinerary(res.data.itinerary ?? null);
+            }
+            hydratedForUser.current = user.id;
+        });
+    }, [user, authLoading]);
 
+    // Always keep localStorage in sync too — instant reloads and guest usage rely on this
+    useEffect(() => { localStorage.setItem(SELECTION_KEY, JSON.stringify(selectedIds)); }, [selectedIds]);
+    useEffect(() => { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); }, [notes]);
+    useEffect(() => { localStorage.setItem(ITINERARY_KEY, JSON.stringify(itinerary)); }, [itinerary]);
+
+    // Push changes to the database, debounced — only once hydration for this user is done
     useEffect(() => {
-        localStorage.setItem(ITINERARY_KEY, JSON.stringify(itinerary));
-    }, [itinerary]);
+        if (!user || hydratedForUser.current !== user.id) return;
+        const timeout = setTimeout(() => {
+            api.put("/trips/me", { listing_ids: selectedIds, notes, itinerary }).catch(() => { });
+        }, 800);
+        return () => clearTimeout(timeout);
+    }, [selectedIds, notes, itinerary, user]);
 
     const toggle = (id: string) => {
         setSelectedIds((prev) =>

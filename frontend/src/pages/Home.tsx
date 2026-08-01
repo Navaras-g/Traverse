@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 import type { Listing } from "../types/listing";
+import type { TripStyle } from "../lib/tripStyles";
 import { ListingCard } from "../components/ListingCard";
 import { Reveal } from "../components/Reveal";
 
 const TRIP_STYLE_COLORS = ["#A9814A", "#5C7350", "#7C9BA6", "#A85C42", "#7C6485", "#4F7566", "#8B5058"];
 
 export function Home() {
+    const { user } = useAuth();
     const [listings, setListings] = useState<Listing[]>([]);
+    const [forYou, setForYou] = useState<Listing[]>([]);
 
     useEffect(() => {
         api.get<Listing[]>("/listings/search").then((res) => {
@@ -17,40 +21,50 @@ export function Home() {
         });
     }, []);
 
+    useEffect(() => {
+        const styles: TripStyle[] = (user?.preferences?.trip_styles as TripStyle[]) ?? [];
+        const budgetMax = user?.preferences?.budget_max ?? undefined;
+
+        if (styles.length === 0) {
+            setForYou([]);
+            return;
+        }
+
+        Promise.all(
+            styles.map((style) =>
+                api
+                    .get<Listing[]>("/listings/search", {
+                        params: { trip_style: style, ...(budgetMax ? { budget_max: budgetMax } : {}) },
+                    })
+                    .then((res) => res.data)
+            )
+        ).then((results) => {
+            const merged = new Map<string, Listing>();
+            results.flat().forEach((l) => merged.set(l.id, l));
+            const combined = Array.from(merged.values()).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+            setForYou(combined.slice(0, 6));
+        });
+    }, [user]);
+
     return (
         <div>
-            {/* Hero */}
             <section className="max-w-6xl mx-auto px-6 pt-20 pb-16">
-                <p
-                    className="font-sans text-xs tracking-widest uppercase text-[var(--color-muted)] mb-3"
-                    style={{ animation: "fadeUp 0.6s ease-out both" }}
-                >
+                <p className="font-sans text-xs tracking-widest uppercase text-[var(--color-muted)] mb-3" style={{ animation: "fadeUp 0.6s ease-out both" }}>
                     Popular destinations · 7 provinces
                 </p>
-                <h1
-                    className="font-display italic text-5xl md:text-7xl leading-tight text-[var(--color-ink)] mb-6 max-w-2xl"
-                    style={{ animation: "fadeUp 0.7s ease-out 0.12s both" }}
-                >
+                <h1 className="font-display italic text-5xl md:text-7xl leading-tight text-[var(--color-ink)] mb-6 max-w-2xl" style={{ animation: "fadeUp 0.7s ease-out 0.12s both" }}>
                     Find your way through Nepal
                 </h1>
-                <p
-                    className="font-sans text-lg text-[var(--color-ink)]/70 mb-8 max-w-md"
-                    style={{ animation: "fadeUp 0.7s ease-out 0.24s both" }}
-                >
+                <p className="font-sans text-lg text-[var(--color-ink)]/70 mb-8 max-w-md" style={{ animation: "fadeUp 0.7s ease-out 0.24s both" }}>
                     Personalized itineraries built from real places — from Thamel's rooftops to Rara's shoreline.
                 </p>
-
-                <div
-                    className="h-1 rounded-full overflow-hidden mb-8 max-w-md"
-                    style={{ animation: "fadeUp 0.6s ease-out 0.36s both" }}
-                >
+                <div className="h-1 rounded-full overflow-hidden mb-8 max-w-md" style={{ animation: "fadeUp 0.6s ease-out 0.36s both" }}>
                     <div className="flex h-full" style={{ animation: "drawLine 1.1s ease-out 0.5s both" }}>
                         {TRIP_STYLE_COLORS.map((c) => (
                             <div key={c} className="flex-1" style={{ backgroundColor: c }} />
                         ))}
                     </div>
                 </div>
-
                 <Link
                     to="/search"
                     className="inline-block font-sans text-sm font-medium bg-[var(--color-ink)] text-[var(--color-paper)] px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
@@ -60,12 +74,36 @@ export function Home() {
                 </Link>
             </section>
 
-            {/* Featured listings */}
+            {forYou.length > 0 && (
+                <section className="max-w-6xl mx-auto px-6 pb-24">
+                    <Reveal>
+                        <h2 className="font-display text-2xl text-[var(--color-ink)] mb-1">For you</h2>
+                        <p className="font-sans text-sm text-[var(--color-muted)] mb-6">Based on your saved trip styles.</p>
+                    </Reveal>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {forYou.map((listing, i) => (
+                            <ListingCard key={listing.id} listing={listing} delayMs={i * 80} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {user && forYou.length === 0 && (
+                <section className="max-w-6xl mx-auto px-6 pb-12">
+                    <Reveal>
+                        <div className="bg-white border border-[var(--color-line)] rounded-xl p-6">
+                            <p className="font-sans text-sm text-[var(--color-ink)]">
+                                Set your trip style preferences to see personalized picks here.{" "}
+                                <Link to="/preferences" className="underline">Set preferences →</Link>
+                            </p>
+                        </div>
+                    </Reveal>
+                </section>
+            )}
+
             <section className="max-w-6xl mx-auto px-6 pb-24">
                 <Reveal>
-                    <h2 className="font-display text-2xl text-[var(--color-ink)] mb-6">
-                        Highly rated, right now
-                    </h2>
+                    <h2 className="font-display text-2xl text-[var(--color-ink)] mb-6">Highly rated, right now</h2>
                 </Reveal>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {listings.map((listing, i) => (
