@@ -46,14 +46,25 @@ export function TripProvider({ children }: { children: ReactNode }) {
     const [notes, setNotes] = useState<string>(() => readJSON(NOTES_KEY, ""));
     const [itinerary, setItinerary] = useState<ItineraryResult | null>(() => readJSON(ITINERARY_KEY, null));
     const hydratedForUser = useRef<string | null>(null);
+    const prevUserId = useRef<string | null>(null);
 
-    // Once we know who's logged in, pull their saved trip from the database
     useEffect(() => {
         if (authLoading) return;
+
         if (!user) {
-            hydratedForUser.current = null;
+            // A logged-in user just logged out — their trip data shouldn't linger
+            // for whoever uses this browser next.
+            if (prevUserId.current) {
+                setSelectedIds([]);
+                setNotes("");
+                setItinerary(null);
+                hydratedForUser.current = null;
+            }
+            prevUserId.current = null;
             return;
         }
+
+        prevUserId.current = user.id;
         if (hydratedForUser.current === user.id) return;
 
         api.get("/trips/me").then((res) => {
@@ -61,17 +72,21 @@ export function TripProvider({ children }: { children: ReactNode }) {
                 setSelectedIds(res.data.listing_ids ?? []);
                 setNotes(res.data.notes ?? "");
                 setItinerary(res.data.itinerary ?? null);
+            } else {
+                // logging into an account with no saved trip yet — don't inherit
+                // whatever a previous guest/user left in localStorage
+                setSelectedIds([]);
+                setNotes("");
+                setItinerary(null);
             }
             hydratedForUser.current = user.id;
         });
     }, [user, authLoading]);
 
-    // Always keep localStorage in sync too — instant reloads and guest usage rely on this
     useEffect(() => { localStorage.setItem(SELECTION_KEY, JSON.stringify(selectedIds)); }, [selectedIds]);
     useEffect(() => { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); }, [notes]);
     useEffect(() => { localStorage.setItem(ITINERARY_KEY, JSON.stringify(itinerary)); }, [itinerary]);
 
-    // Push changes to the database, debounced — only once hydration for this user is done
     useEffect(() => {
         if (!user || hydratedForUser.current !== user.id) return;
         const timeout = setTimeout(() => {
