@@ -8,6 +8,8 @@ python-dotenv
 pydantic-settings
 httpx
 openai
-passlib[bcrypt]
+passlib
+bcrypt<4.1
 python-jose[cryptography]
 python-multipart
+email-validator
