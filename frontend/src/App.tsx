@@ -8,10 +8,12 @@ import { Register } from "./pages/Register";
 import { Preferences } from "./pages/Preferences";
 import { ListingDetail } from "./pages/ListingDetail";
 import { Bookings } from "./pages/Bookings";
+import { AmbientBackground } from "./components/AmbientBackground";
 
 function App() {
   return (
     <BrowserRouter>
+      <AmbientBackground />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
