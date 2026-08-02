@@ -18,3 +18,16 @@ def get_hero_image():
     url = fetch_photo_url("Annapurna Himalaya sunrise panorama mountains")
     redis_client.setex(HERO_CACHE_KEY, HERO_CACHE_TTL, url)
     return {"image_url": url}
+
+AUTH_CACHE_KEY = "auth_image_url"
+
+
+@router.get("/auth-image")
+def get_auth_image():
+    cached = redis_client.get(AUTH_CACHE_KEY)
+    if cached:
+        return {"image_url": cached}
+
+    url = fetch_photo_url("Kathmandu Nepal temple street evening")
+    redis_client.setex(AUTH_CACHE_KEY, HERO_CACHE_TTL, url)
+    return {"image_url": url}

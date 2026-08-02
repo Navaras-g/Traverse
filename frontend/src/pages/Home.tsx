@@ -57,7 +57,8 @@ export function Home() {
                         style={{ backgroundImage: `url(${heroImage})`, transform: `translateY(${scrollY * 0.35}px) scale(1.15)` }}
                     />
                 )}
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(42,36,32,0.35) 0%, rgba(42,36,32,0.15) 40%, var(--color-paper) 96%)" }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(30,24,20,0.25) 0%, rgba(30,24,20,0.05) 35%, var(--color-paper) 96%)" }} />
+                <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 60% at 15% 68%, rgba(20,16,12,0.62) 0%, rgba(20,16,12,0.28) 45%, transparent 72%)" }} />
 
                 {/* postcard-style inset frame */}
                 <div className="absolute inset-4 md:inset-8 border border-white/25 rounded-2xl pointer-events-none" />
@@ -66,11 +67,11 @@ export function Home() {
                     <p className="font-sans text-xs tracking-widest uppercase text-white/80 mb-3" style={{ animation: "fadeUp 0.6s ease-out both" }}>
                         Popular destinations · 7 provinces
                     </p>
-                    <h1 className="font-display italic text-5xl md:text-7xl leading-tight text-white mb-6 max-w-2xl drop-shadow-sm" style={{ animation: "fadeUp 0.7s ease-out 0.12s both" }}>
+                    <h1 className="font-display italic text-5xl md:text-7xl leading-tight text-white mb-6 max-w-2xl" style={{ animation: "fadeUp 0.7s ease-out 0.12s both", textShadow: "0 2px 20px rgba(0,0,0,0.35)" }}>
                         Find your way through Nepal
                     </h1>
-                    <p className="font-sans text-lg text-white/85 mb-8 max-w-md" style={{ animation: "fadeUp 0.7s ease-out 0.24s both" }}>
-                        Personalized itineraries built from real places — from Thamel's rooftops to Rara's shoreline.
+                    <p className="font-sans text-lg text-white/90 mb-8 max-w-md" style={{ animation: "fadeUp 0.7s ease-out 0.24s both", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}>
+                        Personalized itineraries built from real places, from the Capital to the Outskirts.
                     </p>
                     <div className="h-1 rounded-full overflow-hidden mb-8 max-w-md" style={{ animation: "fadeUp 0.6s ease-out 0.36s both" }}>
                         <div className="flex h-full" style={{ animation: "drawLine 1.1s ease-out 0.5s both" }}>

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { AuthLayout } from "../components/AuthLayout";
 
 export function Login() {
     const { login } = useAuth();
@@ -25,19 +26,27 @@ export function Login() {
     };
 
     return (
-        <div className="max-w-sm mx-auto px-6 py-20">
-            <h1 className="font-display text-3xl mb-8">Welcome back</h1>
+        <AuthLayout>
+            <div className="flex items-center gap-2.5 mb-1">
+                <span className="w-2 h-2 rounded-full bg-[var(--color-relaxation)]" />
+                <p className="font-sans text-xs uppercase tracking-widest text-[var(--color-muted)]">Welcome back</p>
+            </div>
+            <h1 className="font-display text-3xl mb-6">Log in</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    className="w-full font-sans text-sm bg-white border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)]"
-                />
-                <input
-                    type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="w-full font-sans text-sm bg-white border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)]"
-                />
+                <div>
+                    <label className="font-sans text-xs uppercase tracking-wide text-[var(--color-muted)] mb-1.5 block">Email</label>
+                    <input
+                        type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                        className="w-full font-sans text-sm bg-[var(--color-paper)] border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)] transition-colors"
+                    />
+                </div>
+                <div>
+                    <label className="font-sans text-xs uppercase tracking-wide text-[var(--color-muted)] mb-1.5 block">Password</label>
+                    <input
+                        type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                        className="w-full font-sans text-sm bg-[var(--color-paper)] border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)] transition-colors"
+                    />
+                </div>
                 {error && <p className="font-sans text-sm text-[var(--color-food)]">{error}</p>}
                 <button
                     type="submit" disabled={loading}
@@ -49,6 +58,6 @@ export function Login() {
             <p className="font-sans text-sm text-[var(--color-muted)] mt-6">
                 No account yet? <Link to="/register" className="text-[var(--color-ink)] underline">Sign up</Link>
             </p>
-        </div>
+        </AuthLayout>
     );
 }

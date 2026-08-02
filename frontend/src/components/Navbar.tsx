@@ -9,7 +9,9 @@ export function Navbar() {
     return (
         <header className="sticky top-0 z-10 bg-[var(--color-paper)]/90 backdrop-blur-sm border-b border-[var(--color-line)]">
             <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-                <Link to="/" className="font-display italic text-2xl text-[var(--color-ink)]">Traverse</Link>
+                <Link to="/" className="font-display italic text-2xl text-[var(--color-ink)]">
+                    Traverse
+                </Link>
                 <nav className="flex items-center gap-6 font-sans text-sm text-[var(--color-ink)]">
                     <Link to="/search">Explore</Link>
                     <Link to="/trip" className="flex items-center gap-1.5">
@@ -24,15 +26,28 @@ export function Navbar() {
                         <>
                             <Link to="/preferences">Preferences</Link>
                             <Link to="/bookings">Bookings</Link>
-                            <span className="text-[var(--color-muted)]">Hi, {user.display_name.split(" ")[0]}</span>
-                            <button onClick={logout} className="text-[var(--color-muted)] hover:text-[var(--color-ink)] transition-colors">
+                            <span className="text-[var(--color-muted)]">
+                                Hi, {user.display_name.split(" ")[0]}
+                            </span>
+                            <button
+                                onClick={logout}
+                                className="text-[var(--color-muted)] hover:text-[var(--color-ink)] transition-colors"
+                            >
                                 Log out
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link to="/login">Log in</Link>
-                            <Link to="/register" className="bg-[var(--color-ink)] text-[var(--color-paper)] px-4 py-1.5 rounded-full">
+                            <Link
+                                to="/login"
+                                className="border border-[var(--color-ink)] text-[var(--color-ink)] px-4 py-1.5 rounded-full hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] transition-colors"
+                            >
+                                Log in
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="bg-[var(--color-ink)] text-[var(--color-paper)] px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+                            >
                                 Sign up
                             </Link>
                         </>
