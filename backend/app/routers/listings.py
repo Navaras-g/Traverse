@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
@@ -48,3 +48,10 @@ def search_listings(
 
     results.sort(key=lambda x: x.score, reverse=True)
     return results
+
+@router.get("/{listing_id}", response_model=ListingOut)
+def get_listing(listing_id: str, db: Session = Depends(get_db)):
+    listing = db.get(Listing, listing_id)
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return ListingOut.model_validate(listing)

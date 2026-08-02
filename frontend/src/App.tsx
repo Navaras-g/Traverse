@@ -6,6 +6,8 @@ import { Trip } from "./pages/Trip";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Preferences } from "./pages/Preferences";
+import { ListingDetail } from "./pages/ListingDetail";
+import { Bookings } from "./pages/Bookings";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/preferences" element={<Preferences />} />
+        <Route path="/listings/:id" element={<ListingDetail />} />
+        <Route path="/bookings" element={<Bookings />} />
       </Routes>
     </BrowserRouter>
   );

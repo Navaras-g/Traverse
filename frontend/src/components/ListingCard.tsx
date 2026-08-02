@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Listing } from "../types/listing";
 import { Badge } from "./Badge";
 import { Reveal } from "./Reveal";
@@ -9,9 +10,12 @@ export function ListingCard({ listing, delayMs = 0 }: { listing: Listing; delayM
 
     return (
         <Reveal delayMs={delayMs}>
-            <div className="bg-white rounded-xl overflow-hidden border border-[var(--color-line)] group cursor-pointer relative">
+            <Link
+                to={`/listings/${listing.id}`}
+                className="block bg-white rounded-xl overflow-hidden border border-[var(--color-line)] group cursor-pointer relative"
+            >
                 <button
-                    onClick={(e) => { e.stopPropagation(); toggle(listing.id); }}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(listing.id); }}
                     className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors"
                     style={{
                         backgroundColor: selected ? "var(--color-ink)" : "rgba(255,255,255,0.9)",
@@ -37,7 +41,7 @@ export function ListingCard({ listing, delayMs = 0 }: { listing: Listing; delayM
                         <span className="font-sans text-sm text-[var(--color-ink)]">★ {listing.rating.toFixed(1)}</span>
                     </div>
                 </div>
-            </div>
+            </Link>
         </Reveal>
     );
 }

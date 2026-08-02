@@ -23,6 +23,7 @@ export function Navbar() {
                     {user ? (
                         <>
                             <Link to="/preferences">Preferences</Link>
+                            <Link to="/bookings">Bookings</Link>
                             <span className="text-[var(--color-muted)]">Hi, {user.display_name.split(" ")[0]}</span>
                             <button onClick={logout} className="text-[var(--color-muted)] hover:text-[var(--color-ink)] transition-colors">
                                 Log out
