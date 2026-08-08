@@ -13,3 +13,5 @@ bcrypt<4.1
 python-jose[cryptography]
 python-multipart
 email-validator
+fastembed
+pgvector

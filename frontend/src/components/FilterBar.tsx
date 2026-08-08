@@ -4,6 +4,7 @@ const REGIONS = ["Bagmati", "Gandaki", "Lumbini", "Karnali", "Sudurpashchim", "K
 
 export interface Filters {
     query: string;
+    vibe: string;
     region: string;
     tripStyle: TripStyle | "";
     budgetMax: string;
@@ -29,6 +30,19 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
                     value={filters.query}
                     onChange={(e) => update({ query: e.target.value })}
                     placeholder="e.g. Durbar Square, Pokhara"
+                    className="w-full font-sans text-sm bg-white border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)] transition-colors"
+                />
+            </div>
+
+            <div>
+                <label className="font-sans text-xs uppercase tracking-wide text-[var(--color-muted)] mb-2 block">
+                    Describe your ideal trip
+                </label>
+                <input
+                    type="text"
+                    value={filters.vibe}
+                    onChange={(e) => update({ vibe: e.target.value })}
+                    placeholder="e.g. quiet mountain village, good food"
                     className="w-full font-sans text-sm bg-white border border-[var(--color-line)] rounded-full px-4 py-2.5 outline-none focus:border-[var(--color-ink)] transition-colors"
                 />
             </div>

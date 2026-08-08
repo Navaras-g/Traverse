@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.session import Base
+from pgvector.sqlalchemy import Vector
 
 
 class Listing(Base):
@@ -17,10 +18,11 @@ class Listing(Base):
     city: Mapped[str] = mapped_column(String(100), index=True)
     country: Mapped[str] = mapped_column(String(100), index=True)
     region: Mapped[str] = mapped_column(String(100), index=True)
-    trip_style: Mapped[str] = mapped_column(String(50), index=True)  # relaxation, adventure, culture, food, nightlife
+    trip_style: Mapped[str] = mapped_column(String(50), index=True)  
     price_per_night: Mapped[float] = mapped_column(Float)
     rating: Mapped[float] = mapped_column(Float, default=0.0)
     image_url: Mapped[str] = mapped_column(String(500))
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(384), nullable=True)

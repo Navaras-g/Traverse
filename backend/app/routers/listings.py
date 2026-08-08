@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.models.listing import Listing
 from app.schemas.listing import ListingOut
 from app.services.ranking import score_listing
+from app.services.embeddings import embed_text
 
 router = APIRouter(prefix="/listings", tags=["listings"])
 
@@ -23,14 +24,13 @@ def search_listings(
     trip_style: str | None = None,
     budget_max: float | None = Query(None, gt=0),
     min_rating: float | None = Query(None, ge=0, le=5),
+    vibe: str | None = None,
     db: Session = Depends(get_db),
 ):
     query = select(Listing)
     if q:
         like = f"%{q}%"
-        query = query.where(
-            or_(Listing.title.ilike(like), Listing.description.ilike(like), Listing.city.ilike(like))
-        )
+        query = query.where(or_(Listing.title.ilike(like), Listing.description.ilike(like), Listing.city.ilike(like)))
     if region:
         query = query.where(Listing.region.ilike(f"%{region}%"))
     if trip_style:
@@ -39,11 +39,12 @@ def search_listings(
         query = query.where(Listing.rating >= min_rating)
 
     listings = db.execute(query).scalars().all()
+    vibe_embedding = embed_text(vibe) if vibe else None
 
     results = []
     for listing in listings:
         item = ListingOut.model_validate(listing)
-        item.score = score_listing(listing, trip_style, budget_max)
+        item.score = score_listing(listing, trip_style, budget_max, vibe_embedding)
         results.append(item)
 
     results.sort(key=lambda x: x.score, reverse=True)

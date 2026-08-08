@@ -5,7 +5,7 @@ import { ListingCard } from "../components/ListingCard";
 import { FilterBar, type Filters } from "../components/FilterBar";
 import { MapView } from "../components/MapView";
 
-const EMPTY_FILTERS: Filters = { query: "", region: "", tripStyle: "", budgetMax: "", minRating: "" };
+const EMPTY_FILTERS: Filters = { query: "", vibe: "", region: "", tripStyle: "", budgetMax: "", minRating: "" };
 
 export function Search() {
     const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -17,6 +17,7 @@ export function Search() {
             setLoading(true);
             const params: Record<string, string> = {};
             if (filters.query) params.q = filters.query;
+            if (filters.vibe) params.vibe = filters.vibe;
             if (filters.region) params.region = filters.region;
             if (filters.tripStyle) params.trip_style = filters.tripStyle;
             if (filters.budgetMax) params.budget_max = filters.budgetMax;
