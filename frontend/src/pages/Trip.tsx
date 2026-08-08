@@ -60,7 +60,12 @@ export function Trip() {
                         finalMeta = { trip_title: data.trip_title, intro: data.intro };
                         setStreamingMeta(finalMeta);
                     } else if (data.type === "day") {
-                        const day = { day_number: data.day_number, heading: data.heading, narrative: data.narrative, listing_ids: data.listing_ids };
+                        const day = {
+                            day_number: data.day_number ?? finalDays.length + 1,
+                            heading: data.heading ?? "Untitled day",
+                            narrative: data.narrative ?? "",
+                            listing_ids: Array.isArray(data.listing_ids) ? data.listing_ids : [],
+                        };
                         finalDays.push(day);
                         setStreamingDays((prev) => [...prev, day]);
                     } else if (data.type === "done") {

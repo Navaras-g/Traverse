@@ -9,22 +9,25 @@ import { Preferences } from "./pages/Preferences";
 import { ListingDetail } from "./pages/ListingDetail";
 import { Bookings } from "./pages/Bookings";
 import { AmbientBackground } from "./components/AmbientBackground";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function App() {
   return (
     <BrowserRouter>
       <AmbientBackground />
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/trip" element={<Trip />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/preferences" element={<Preferences />} />
-        <Route path="/listings/:id" element={<ListingDetail />} />
-        <Route path="/bookings" element={<Bookings />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/trip" element={<Trip />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/preferences" element={<Preferences />} />
+          <Route path="/listings/:id" element={<ListingDetail />} />
+          <Route path="/bookings" element={<Bookings />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }
