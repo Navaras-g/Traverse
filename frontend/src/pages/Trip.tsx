@@ -14,6 +14,9 @@ export function Trip() {
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [streamingDays, setStreamingDays] = useState<any[]>([]);
+    const [streamingMeta, setStreamingMeta] = useState<{ trip_title: string; intro: string } | null>(null);
+
     useEffect(() => {
         if (selectedIds.length === 0) { setListings([]); return; }
         api.get<Listing[]>("/listings/by-ids", { params: { ids: selectedIds.join(",") } }).then((res) => setListings(res.data));
@@ -22,9 +25,49 @@ export function Trip() {
     const generate = async () => {
         setGenerating(true);
         setError(null);
+        setStreamingDays([]);
+        setStreamingMeta(null);
+
         try {
-            const res = await api.post("/itinerary/generate", { listing_ids: selectedIds, notes: notes || null });
-            setItinerary(res.data);
+            const token = localStorage.getItem("traverse_token");
+            const res = await fetch(`${api.defaults.baseURL}/itinerary/generate/stream`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ listing_ids: selectedIds, notes: notes || null }),
+            });
+
+            if (!res.ok || !res.body) throw new Error("Stream failed to start");
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let finalMeta: { trip_title: string; intro: string } | null = null;
+            const finalDays: any[] = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+
+                const events = buffer.split("\n\n");
+                buffer = events.pop() ?? ""; // keep the last (possibly incomplete) chunk
+
+                for (const evt of events) {
+                    if (!evt.startsWith("data: ")) continue;
+                    const data = JSON.parse(evt.slice(6));
+
+                    if (data.type === "meta") {
+                        finalMeta = { trip_title: data.trip_title, intro: data.intro };
+                        setStreamingMeta(finalMeta);
+                    } else if (data.type === "day") {
+                        const day = { day_number: data.day_number, heading: data.heading, narrative: data.narrative, listing_ids: data.listing_ids };
+                        finalDays.push(day);
+                        setStreamingDays((prev) => [...prev, day]);
+                    } else if (data.type === "done") {
+                        setItinerary({ trip_title: finalMeta?.trip_title ?? "Your Nepal Trip", intro: finalMeta?.intro ?? "", days: finalDays, cached: false });
+                    }
+                }
+            }
         } catch {
             setError("Couldn't generate an itinerary right now — your selected stops are still listed below, try again in a moment.");
         } finally {
@@ -86,40 +129,50 @@ export function Trip() {
 
             {error && <p className="font-sans text-sm text-[var(--color-food)] mb-8">{error}</p>}
 
-            {itinerary && (
-                <div>
-                    <Reveal>
-                        <h2 className="font-display italic text-3xl text-[var(--color-ink)] mb-2">{itinerary.trip_title}</h2>
-                        <p className="font-sans text-[var(--color-muted)] mb-10">{itinerary.intro}</p>
-                    </Reveal>
-                    <div className="space-y-8">
-                        {itinerary.days.map((day, i) => {
-                            const dayListings = day.listing_ids.map(listingById).filter(Boolean) as Listing[];
-                            return (
-                                <Reveal key={day.day_number} delayMs={i * 120}>
-                                    <div className="flex gap-5 border-t border-[var(--color-line)] pt-6">
-                                        <div className="font-mono text-sm text-[var(--color-muted)] pt-1 w-16 shrink-0">Day {day.day_number}</div>
-                                        <div className="flex-1">
-                                            {dayListings.length > 0 && (
-                                                <div className={`grid gap-3 mb-4 ${dayListings.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
-                                                    {dayListings.map((listing) => (
-                                                        <img key={listing.id} src={listing.image_url} alt={listing.title} className="w-full h-48 object-cover rounded-xl" />
-                                                    ))}
+            {(generating || itinerary) && (() => {
+                const meta = generating ? streamingMeta : itinerary;
+                const days = generating ? streamingDays : itinerary?.days ?? [];
+                if (!meta) return null;
+
+                return (
+                    <div>
+                        <Reveal>
+                            <h2 className="font-display italic text-3xl text-[var(--color-ink)] mb-2">{meta.trip_title}</h2>
+                            <p className="font-sans text-[var(--color-muted)] mb-10">{meta.intro}</p>
+                        </Reveal>
+
+                        <div className="space-y-8">
+                            {days.map((day: any, i: number) => {
+                                const dayListings = day.listing_ids.map(listingById).filter(Boolean) as Listing[];
+                                return (
+                                    <Reveal key={day.day_number} delayMs={0}>
+                                        <div className="flex gap-5 border-t border-[var(--color-line)] pt-6">
+                                            <div className="font-mono text-sm text-[var(--color-muted)] pt-1 w-16 shrink-0">Day {day.day_number}</div>
+                                            <div className="flex-1">
+                                                {dayListings.length > 0 && (
+                                                    <div className={`grid gap-3 mb-4 ${dayListings.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+                                                        {dayListings.map((listing) => (
+                                                            <img key={listing.id} src={listing.image_url} alt={listing.title} className="w-full h-48 object-cover rounded-xl" />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                    <h3 className="font-display text-xl text-[var(--color-ink)]">{day.heading}</h3>
+                                                    {dayListings.map((listing) => <Badge key={listing.id} style={listing.trip_style} />)}
                                                 </div>
-                                            )}
-                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                <h3 className="font-display text-xl text-[var(--color-ink)]">{day.heading}</h3>
-                                                {dayListings.map((listing) => <Badge key={listing.id} style={listing.trip_style} />)}
+                                                <p className="font-sans text-sm text-[var(--color-ink)]/80 leading-relaxed">{day.narrative}</p>
                                             </div>
-                                            <p className="font-sans text-sm text-[var(--color-ink)]/80 leading-relaxed">{day.narrative}</p>
                                         </div>
-                                    </div>
-                                </Reveal>
-                            );
-                        })}
+                                    </Reveal>
+                                );
+                            })}
+                            {generating && (
+                                <p className="font-mono text-xs text-[var(--color-muted)] pt-2">Writing the next day…</p>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 }
