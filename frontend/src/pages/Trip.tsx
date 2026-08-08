@@ -142,7 +142,7 @@ export function Trip() {
                         </Reveal>
 
                         <div className="space-y-8">
-                            {days.map((day: any, i: number) => {
+                            {days.map((day: any) => {
                                 const dayListings = day.listing_ids.map(listingById).filter(Boolean) as Listing[];
                                 return (
                                     <Reveal key={day.day_number} delayMs={0}>
